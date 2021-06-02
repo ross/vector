@@ -1,5 +1,7 @@
 mod util;
 
+#[cfg(feature = "add_datadog_tags")]
+mod add_datadog_tags;
 #[cfg(feature = "append")]
 mod append;
 #[cfg(feature = "array")]
@@ -208,7 +210,8 @@ mod upcase;
 mod uuid_v4;
 
 // -----------------------------------------------------------------------------
-
+#[cfg(feature = "add_datadog_tags")]
+pub use crate::add_datadog_tags::AddDatadogTags;
 #[cfg(feature = "array")]
 pub use crate::array::Array;
 #[cfg(feature = "md5")]
@@ -412,6 +415,8 @@ pub use uuid_v4::UuidV4;
 
 pub fn all() -> Vec<Box<dyn vrl::Function>> {
     vec![
+        #[cfg(feature = "add_datadog_tags")]
+        Box::new(AddDatadogTags),
         #[cfg(feature = "array")]
         Box::new(Array),
         #[cfg(feature = "append")]
