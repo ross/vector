@@ -9,7 +9,8 @@ criterion_group!(
     // encapsulates CI noise we saw in
     // https://github.com/timberio/vector/pull/6408
     config = Criterion::default().noise_threshold(0.05);
-    targets = assert,
+    targets = add_datadog_tags,
+              assert,
               ceil,
               compact,
               contains,
@@ -77,6 +78,7 @@ criterion_group!(
               parse_url,
               push,
               redact,
+              remove_datadog_tags,
               replace,
               round,
               sha1,
@@ -103,6 +105,20 @@ criterion_group!(
               upcase
 );
 criterion_main!(benches);
+
+bench_function! {
+    add_datadog_tags => vrl_stdlib::AddDatadogTags;
+
+    add_two_tags {
+        args: func_args![value: "tag1:val1", tags: value!(["tag2:val2", "tag4:val3"])],
+        want: Ok("tag1:val1,tag2:val2"),
+    }
+
+    add_duplicate {
+        args: func_args![value: "foo:bar", tags: value!(["foo:bar"])],
+        want: Ok("foo:bar"),
+    }
+}
 
 bench_function! {
     append => vrl_stdlib::Append;
@@ -1253,6 +1269,36 @@ bench_function! {
             filters: vec!["us_social_security_number"],
         ],
         want: Ok("hello [REDACTED] world"),
+    }
+}
+
+bench_function! {
+    remove_datadog_tags => vrl_stdlib::RemoveDatadogTags;
+
+    remove_multiple_tags {
+        args: func_args![
+            tags: "foo:bar,foo:baz,foobar:baz",
+            key: "foo",
+        ],
+        want: Ok("foobar:baz")
+    }
+
+    remove_one_tag {
+        args: func_args![
+            tags: "foo:bar,foo:baz,foobar:baz",
+            key: "foo",
+            value: "baz",
+        ],
+        want: Ok("foo:bar,foobar:baz")
+    }
+
+    no_match {
+        args: func_args![
+            tags: "foo:barbaz,foo:baz,foobar:baz",
+            key: "foo",
+            value: "baz",
+        ],
+        want: Ok("foo:barbaz,foo:baz,foobar:baz")
     }
 }
 
