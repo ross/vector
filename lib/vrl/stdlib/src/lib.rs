@@ -212,6 +212,7 @@ mod upcase;
 mod uuid_v4;
 
 // -----------------------------------------------------------------------------
+
 #[cfg(feature = "array")]
 pub use crate::array::Array;
 #[cfg(feature = "md5")]
