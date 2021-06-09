@@ -4,7 +4,7 @@ remap: functions: add_datadog_tags: {
 	category: "String"
 	description: #"""
 		Add a set of tags to an existing tags list following the Datadog tag format. Datadog logs tags should be kept in the `ddtags` fields to be properly accounted for if the
-		event is ultimately sent to Datadog using the `datadog_logs` sink. Duplicated tags are removed.
+		event is ultimately sent to Datadog using the `datadog_logs` sink. Duplicated tags are ignored.
 		"""#
 
 	arguments: [
