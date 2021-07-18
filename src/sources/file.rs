@@ -72,6 +72,7 @@ pub struct FileConfig {
     pub ignore_older_secs: Option<u64>,
     #[serde(default = "default_max_line_bytes")]
     pub max_line_bytes: usize,
+    pub allow_empty: Option<bool>,
     pub host_key: Option<String>,
     pub data_dir: Option<PathBuf>,
     #[serde(alias = "glob_minimum_cooldown")]
@@ -173,6 +174,7 @@ impl Default for FileConfig {
             read_from: None,
             ignore_older_secs: None,
             max_line_bytes: default_max_line_bytes(),
+            allow_empty: None,
             fingerprint: FingerprintConfig::Checksum {
                 bytes: None,
                 ignored_header_bytes: 0,
@@ -281,6 +283,7 @@ pub fn file_source(
     let file_server = FileServer {
         paths_provider,
         max_read_bytes: config.max_read_bytes,
+        allow_empty: config.allow_empty.unwrap_or(false),
         ignore_checkpoints,
         read_from,
         ignore_before,
