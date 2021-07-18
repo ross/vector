@@ -86,6 +86,9 @@ pub struct Config {
     /// the files.
     max_read_bytes: usize,
 
+    /// Whether to emit empty lines from the files.
+    allow_empty: bool,
+
     /// The maximum number of a bytes a line can contain before being discarded. This protects
     /// against malformed lines or tailing incorrect files.
     max_line_bytes: usize,
@@ -142,6 +145,7 @@ impl Default for Config {
             exclude_paths_glob_patterns: default_path_exclusion(),
             max_read_bytes: default_max_read_bytes(),
             max_line_bytes: default_max_line_bytes(),
+            allow_empty: false,
             fingerprint_lines: default_fingerprint_lines(),
             glob_minimum_cooldown_ms: default_glob_minimum_cooldown_ms(),
             ingestion_timestamp_field: None,
@@ -185,6 +189,7 @@ struct Source {
     exclude_paths: Vec<glob::Pattern>,
     max_read_bytes: usize,
     max_line_bytes: usize,
+    allow_empty: bool,
     fingerprint_lines: usize,
     glob_minimum_cooldown: Duration,
     ingestion_timestamp_field: Option<String>,
@@ -222,6 +227,7 @@ impl Source {
             exclude_paths,
             max_read_bytes: config.max_read_bytes,
             max_line_bytes: config.max_line_bytes,
+            allow_empty: config.allow_empty,
             fingerprint_lines: config.fingerprint_lines,
             glob_minimum_cooldown,
             ingestion_timestamp_field: config.ingestion_timestamp_field.clone(),
@@ -244,6 +250,7 @@ impl Source {
             exclude_paths,
             max_read_bytes,
             max_line_bytes,
+            allow_empty,
             fingerprint_lines,
             glob_minimum_cooldown,
             ingestion_timestamp_field,
@@ -282,6 +289,8 @@ impl Source {
             // This allows distributing the reads more or less evenly accross
             // the files.
             max_read_bytes,
+            // Whether or not to translate empty lines into empty messages
+            allow_empty,
             // We want to use checkpoining mechanism, and resume from where we
             // left off.
             ignore_checkpoints: false,

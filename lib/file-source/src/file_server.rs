@@ -38,6 +38,7 @@ where
 {
     pub paths_provider: PP,
     pub max_read_bytes: usize,
+    pub allow_empty: bool,
     pub ignore_checkpoints: bool,
     pub read_from: ReadFrom,
     pub ignore_before: Option<DateTime<Utc>>,
@@ -269,7 +270,7 @@ where
                 let start = time::Instant::now();
                 let mut bytes_read: usize = 0;
                 while let Ok(Some(line)) = watcher.read_line() {
-                    if line.is_empty() {
+                    if !self.allow_empty && line.is_empty() {
                         break;
                     }
 
